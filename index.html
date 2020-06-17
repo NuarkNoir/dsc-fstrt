@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Discrete mathematics project</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+</head>
+
+<body>
+    <div class="uk-navbar-container tm-navbar-container uk-sticky uk-sticky-fixed uk-active uk-sticky-below">
+        <div class="uk-container uk-container-expand">
+            <nav class="uk-navbar">
+                <div class="uk-navbar-left">
+                    FstRT
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div>
+        <ul class="uk-tab-bottom uk-child-width-expand" uk-tab>
+            <li><a href="#">Поиск маршрута</a></li>
+            <li><a href="#">Карта</a></li>
+            <li><a href="#">Настройки</a></li>
+        </ul>
+
+        <ul class="uk-switcher uk-margin">
+            <div id="router-tab" class="uk-container">
+                <div class="uk-padding">
+                    <h1 class="uk-text-lead">Выбор направления</h1>
+                    <div>
+                        <div class="uk-child-width-expand" uk-grid>
+                            <div>
+                                <label for="start_station">Точка отправки</label>
+                                <select id="start_station" name="start_station" class="uk-select">
+                                    <option value="-1">Не выбрано</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="end_station">Точка назначения</label>
+                                <select id="end_station" name="end_station" class="uk-select">
+                                    <option value="-1">Не выбрано</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button class="uk-button uk-button-primary uk-width-1-1 uk-height-1-1" onclick="doRouteSearch(this)">Найти</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-padding">
+                    <h1 class="uk-text-lead">Результат</h1>
+                    <div>
+                        <p class="uk-text-meta">Выберите точки отправки и прибытия, чтобы найти маршрут</p>
+                        <div class="uk-grid-match uk-child-width-1-2" uk-grid>
+                            <div>
+                                <p id="report_first"></p>
+                            </div>
+                            <div>
+                                <p id="report_second"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="uk-section-secondary" id="devsp_map" hidden>
+                    <button onclick="clear_graph()" class="uk-button-small uk-button-default">Clear graph</button>
+                    <button onclick="create_node()" class="uk-button-small uk-button-default">Create new node</button>
+                    <button onclick="remove_node()" class="uk-button-small uk-button-default">Remove node</button>
+                    <button onclick="create_route()" class="uk-button-small uk-button-default">Manages routes</button>
+                    <button onclick="serialize_graph()" class="uk-button-small uk-button-default">Serialize graph to clipboard</button>
+                    <button onclick="deserialize_graph()" class="uk-button-small uk-button-default">Deserialize graph from clipboard</button>
+                </div>
+                <div id="map-tab">
+                </div>
+            </div>
+            
+            <div id="settings-tab">
+                <div class="uk-section-default uk-padding uk-grid-large uk-child-width-expand@s uk-text-center" uk-grid>
+                    <div class="uk-grid-1-2">
+                        <h1 class="uk-text-lead">Стоимость пути</h1>
+                        <div class="uk-margin uk-grid-small" uk-grid>
+                            <input class="uk-input uk-width-3-4" type="text" placeholder="Стоимость пути">
+                            <button onclick="changePrice(this)" class="uk-button uk-button-default uk-input uk-width-1-4">Применить</button>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-grid-1-2">
+                        <h1 class="uk-text-lead">Выбрать город</h1>
+                        <div class="uk-margin uk-grid-small" uk-grid>
+                            <select class="uk-select" onchange="if (typeof(this.selectedIndex) !== typeof(undefined)) { clear_graph(); loadData(this.value); }">
+                                <option value="gways">✔ Красноярск. Случайный 1. 20 вершин.</option>
+                                <option value="bhdsd">♨♨ Красноярск. Случайный 2. 30 вершин.</option>
+                                <option value="nu8we">💢💢 Красноярск. Случайный 3. 40 вершин.</option>
+                                <option value="iemcl">💢💢💢 Красноярск. Случайный 4. 100 вершин.</option>
+                                <option value="prep_1">👍✔ Случайные вершины. Предподготовленый.</option>
+                                <option value="real_data">💢💢💢💢 Красноярск. Реальные данные</option>
+                                <option value="real_data_small">💢💢 Красноярск. Реальные данные. Малый набор.</option>
+                                <option value="semi_real_data">👍🔥✔ Красноярск. Частично реальные данные. Малый набор.</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="uk-section-secondary uk-padding">
+                    <h1 class="uk-text-lead">Developers area</h1>
+                    <p uk-margin>
+                        <label><input class="uk-checkbox" type="checkbox" id="debug_checker"> Enable DEBUG</label>
+                        <br>
+                        <button onclick="clear_graph()" class="uk-button uk-button-default">Clear graph</button>
+                        <button onclick="create_node()" class="uk-button uk-button-default">Create new node</button>
+                        <button onclick="remove_node()" class="uk-button uk-button-default">Remove node</button>
+                        <br>
+                        <button onclick="create_route()" class="uk-button uk-button-default">Manages routes</button>
+                        <br>
+                        <button onclick="serialize_graph()" class="uk-button uk-button-default">Serialize graph to clipboard</button>
+                        <button onclick="deserialize_graph()" class="uk-button uk-button-default">Deserialize graph from clipboard</button>
+                    </p>
+                </div>
+            </div>
+        </ul>
+    </div>
+</body>
+
+<dialog id="create_node_dialog">
+    <form onsubmit="return false;">
+        <section>
+            <p>
+                <label for="in_node_name">Node name</label>
+                <input type="text" id="in_node_name" name="in_node_name" placeholder="Node 1" class="uk-input">
+            </p>
+            <p>
+                <label for="in_node_position">Node position</label>
+                <input type="text" id="in_node_position" name="in_node_position" placeholder="255 -30" class="uk-input">
+            </p>
+        </section>
+        <menu>
+            <button id="create_node_dialog_cancel" type="reset" class="uk-button uk-button-secondary">Cancel</button>
+            <button id="create_node_dialog_confirm" class="uk-button uk-button-primary">Confirm</button>
+        </menu>
+    </form>
+</dialog>
+
+<dialog id="remove_node_dialog">
+    <form onsubmit="return false;">
+        <section>
+            <p>
+                <label for="node_id">Node name</label>
+                <select id="node_id" name="node_id" class="uk-select">
+                    <option value="-1">Not selected</option>
+                </select>
+            </p>
+        </section>
+        <menu>
+            <button id="remove_node_dialog_cancel" type="reset" class="uk-button uk-button-secondary">Cancel</button>
+            <button id="remove_node_dialog_confirm" class="uk-button uk-button-danger">Remove</button>
+        </menu>
+    </form>
+</dialog>
+
+<dialog id="manage_connections_dialog">
+    <form onsubmit="return false;">
+        <section>
+            <p>
+                <label for="node1_id">Start node id</label>
+                <select id="node1_id" name="node1_id" class="uk-select">
+                    <option value="-1">Not selected</option>
+                </select>
+            </p>
+            <p>
+                <label for="node2_id">End node id</label>
+                <select id="node2_id" name="node2_id" class="uk-select">
+                    <option value="-1">Not selected</option>
+                </select>
+            </p>
+            <p>
+                <label for="route_length">Route length (if creating new)</label>
+                <input type="text" id="route_length" name="route_length" placeholder="255 /* &gt; 0 */" class="uk-input">
+            </p>
+        </section>
+        <menu>
+            <button id="manage_connections_dialog_cancel" type="reset" class="uk-button uk-button-secondary">Cancel</button>
+            <button id="remove_node_connection" class="uk-button uk-button-danger">Delete</button>
+            <button id="create_node_connection" class="uk-button uk-button-primary">Create</button>
+        </menu>
+    </form>
+</dialog>
+
+<script>
+let start_station_selector = null;
+let end_station_selector = null;
+let report_first_el = null;
+let report_second_el = null;
+
+let changePrice = function(callee) {
+    let nval = ~~(callee.previousElementSibling.value)
+    if (nval > 0) {
+        router.basePrice = nval;
+        callee.previousElementSibling.value = "";
+    }
+    else {
+        alert(`Значение "${callee.previousElementSibling.value}" нельзя установить в качестве цены (не число, либо меньшо нуля)`);
+    }
+}
+
+let routeToMessage = function(route) {
+    let ft = route.shift();
+    let lt = route.pop();
+
+    let msg = `Начните свой путь с <b>${ft.title}</b>, `; 
+    if (route.length > 0) {
+         msg += `затем двигайтесь к ${route.map(bs => `<b>${bs.title}</b>`).join(", затем к ")}, `;
+    }
+    msg += `оттуда вы доедете до <b>${lt.title}</b>`;
+
+    return msg;
+}
+
+let doRouteSearch = function(callee) {
+    report_first_el.innerHTML = "";
+    report_second_el.innerHTML = "";
+    clearSelectorData();
+
+    report_first_el.textContent = "Ищем...";
+    let [sf, ss] = Array.from(callee.closest("[uk-grid]").querySelectorAll("select")).map(el => ~~el.value);
+
+    if (sf === -1 || ss === -1) {
+        report_first_el.textContent = "Пожалуйста, выберите начальную и конечную точки.";
+    }
+    else if (sf === ss) {
+        report_first_el.innerHTML = "Выбирать начальной и конечной точкой одно и то же место не имеет смысла.<br>";
+        report_first_el.innerHTML += "Быть может, вы ошиблись в своём выборе?";
+    }
+    else {
+        let [sp, ep] = [router.getNodeById(sf), router.getNodeById(ss)];
+        console.log([sf, ss, sp, ep]);
+
+        selected_nodes.first = sp;
+        selected_nodes.second = ep;
+        
+        let [fRoute, cRoute] = [[], []];
+
+        try {
+            fRoute = router.findFastestRoute(sp, ep);
+            cRoute = router.findCheapestRoute(sp, ep);
+        }
+        catch (e) {
+            report_first_el.textContent = "К сожалению, мы не нашли маршрута :(";
+            return;
+        }
+        
+        if (fRoute.length === 0 && fRoute.length === cRoute.length) {
+            report_first_el.textContent = "К сожалению, мы не нашли маршрута :(";
+            return;
+        }
+
+        let fData = router.calcFullRouteStats(fRoute);
+        let cData = router.calcFullRouteStats(cRoute);
+
+        let uRoute = fData.time === cData.time && fData.money === cData.money;
+
+        if (uRoute) {
+            report_first_el.innerHTML = "Система нашла универсальный путь:<br>";
+            report_first_el.innerHTML += `Вы потратите ${fData.money} у.е., а передвижение займёт ${~~(fData.time)} е.в.<br>`;
+            report_first_el.innerHTML += routeToMessage(fRoute);
+        }
+        else {
+            if (fRoute.length > 0) {
+                report_first_el.innerHTML = "Система нашла самый быстрый путь:<br>";
+                report_first_el.innerHTML += `Вы потратите ${fData.money} у.е., а передвижение займёт ${~~(fData.time)} е.в.<br>`;
+                report_first_el.innerHTML += routeToMessage(fRoute);
+            }
+            
+            if (cRoute.length > 0) {
+                report_second_el.innerHTML = "Система нашла самый дешёвый путь:<br>";
+                report_second_el.innerHTML += `Вы потратите ${cData.money} у.е., а передвижение займёт ${~~(cData.time)} е.в.<br>`;
+                report_second_el.innerHTML += routeToMessage(cRoute);
+            }
+        }
+    }
+};
+
+let redrawSelectors = function() {
+    report_first_el.innerHTML = "";
+    report_second_el.innerHTML = "";
+
+    removeOptions(start_station_selector);
+    removeOptions(end_station_selector);
+
+    {
+        let option = document.createElement("option");
+        option.value = "-1";
+        option.textContent = "Не выбрано";
+
+        start_station_selector.add(option.cloneNode(true));
+        end_station_selector.add(option.cloneNode(true));
+    }
+
+    for (let node of router.nodes) {
+        let option = document.createElement("option");
+        option.value = node.id;
+        option.textContent = node.title;
+
+        start_station_selector.add(option.cloneNode(true));
+        end_station_selector.add(option.cloneNode(true));
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    start_station_selector = document.getElementById("start_station");
+    end_station_selector = document.getElementById("end_station");
+    report_first_el = document.getElementById("report_first");
+    report_second_el = document.getElementById("report_second");
+    
+    document.getElementById("debug_checker").addEventListener("change", function() { 
+        DEBUG = this.checked;
+        document.getElementById("devsp_map").toggleAttribute("hidden", !DEBUG);
+    });
+
+    router.addListeners(redrawSelectors, redrawSelectors);    
+
+    redrawSelectors();
+});
+</script>
+
+<script src="system/p5.min.js"></script>
+<script src="system/node.js"></script>
+<script src="system/router.js"></script>
+
+<script src="system/preloaded_map_data.js"></script>
+<script src="system/app.js"></script>
+
+</html>

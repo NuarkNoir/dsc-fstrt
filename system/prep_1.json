@@ -1,0 +1,1 @@
+{"nodes":[{"id":0,"x":0,"y":0,"title":"L1"},{"id":1,"x":-20,"y":20,"title":"S1"},{"id":2,"x":20,"y":20,"title":"L2"},{"id":3,"x":20,"y":40,"title":"V3"},{"id":4,"x":60,"y":0,"title":"S0"}],"routes":[{"from":4,"to":3,"minutes":4},{"from":4,"to":2,"minutes":1},{"from":2,"to":0,"minutes":1},{"from":0,"to":0,"minutes":4},{"from":0,"to":1,"minutes":4},{"from":3,"to":1,"minutes":4}]}

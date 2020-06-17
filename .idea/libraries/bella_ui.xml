@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="bella_ui">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bella_ui.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
